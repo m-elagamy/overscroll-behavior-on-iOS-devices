@@ -86,6 +86,7 @@ body {
   padding: 20px;
   overscroll-behavior: auto;
   -webkit-overflow-scrolling: touch;
+  border: 2px solid red;
 }
 
 .section {
