@@ -1,247 +1,294 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const scrollContent = document.getElementById("scrollContent");
-  const autoBtn = document.getElementById("autoBtn");
-  const containBtn = document.getElementById("containBtn");
-  const noneBtn = document.getElementById("noneBtn");
-  const currentBehavior = document.getElementById("currentBehavior");
-  const deviceInfo = document.getElementById("deviceInfo");
-  const platformInfo = document.getElementById("platformInfo");
+// script.js - Enhanced with iOS scroll chaining fix
 
-  console.log("DOM fully loaded and parsed");
+class ScrollChaining {
+  constructor() {
+    this.scrollContent = null;
+    this.behaviorSelect = null;
+    this.isAtTop = false;
+    this.isAtBottom = false;
+    this.startY = 0;
+    this.velocity = 0;
+    this.lastY = 0;
+    this.lastTime = Date.now();
 
-  console.log("scrollContent:", scrollContent);
-
-  if (!scrollContent) {
-    console.error("❌ scrollContent element not found!");
-    return;
+    this.init();
   }
 
-  // Device detection
-  function detectDevice() {
-    const userAgent = navigator.userAgent;
-    let device = "Unknown";
-    let platform = "Unknown";
-
-    // Detect platform
-    if (/Android/i.test(userAgent)) {
-      platform = "Android";
-    } else if (/iPhone|iPad|iPod/i.test(userAgent)) {
-      platform = "iOS";
-    } else if (/Windows/i.test(userAgent)) {
-      platform = "Windows";
-    } else if (/Mac/i.test(userAgent)) {
-      platform = "macOS";
-    } else if (/Linux/i.test(userAgent)) {
-      platform = "Linux";
-    }
-
-    // Detect device type
-    if (/Mobile|Android|iPhone|iPad|iPod/i.test(userAgent)) {
-      device = "Mobile";
-    } else if (/Tablet|iPad/i.test(userAgent)) {
-      device = "Tablet";
+  init() {
+    // Wait for DOM to be ready
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => this.setup());
     } else {
-      device = "Desktop";
-    }
-
-    // Special case for iPad
-    if (
-      /iPad/i.test(userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
-    ) {
-      device = "Tablet";
-      platform = "iOS";
-    }
-
-    return { device, platform };
-  }
-
-  // Update device info display
-  function updateDeviceInfo() {
-    const { device, platform } = detectDevice();
-    deviceInfo.textContent = device;
-    platformInfo.textContent = platform;
-  }
-
-  // Set overscroll behavior
-  function setOverscrollBehavior(behavior) {
-    // Remove all existing classes
-    scrollContent.classList.remove(
-      "overscroll-auto",
-      "overscroll-contain",
-      "overscroll-none"
-    );
-
-    // Add new class
-    scrollContent.classList.add(`overscroll-${behavior}`);
-
-    // Set CSS property
-    scrollContent.style.overscrollBehavior = behavior;
-
-    // Update display
-    currentBehavior.textContent = behavior;
-
-    // Update button states
-    [autoBtn, containBtn, noneBtn].forEach((btn) =>
-      btn.classList.remove("active")
-    );
-    event.target.classList.add("active");
-
-    // Log the change
-    console.log(`Overscroll behavior changed to: ${behavior}`);
-  }
-
-  // Add event listeners for buttons
-  autoBtn.addEventListener("click", function () {
-    setOverscrollBehavior("auto");
-  });
-
-  containBtn.addEventListener("click", function () {
-    setOverscrollBehavior("contain");
-  });
-
-  noneBtn.addEventListener("click", function () {
-    setOverscrollBehavior("none");
-  });
-
-  // Overscroll detection and visual feedback
-  let isOverscrolling = false;
-  let overscrollTimeout;
-
-  function handleOverscroll(event) {
-    const scrollTop = scrollContent.scrollTop;
-    const scrollHeight = scrollContent.scrollHeight;
-    const clientHeight = scrollContent.clientHeight;
-
-    // Check if we're at the boundaries
-    const atTop = scrollTop <= 0;
-    const atBottom = scrollTop + clientHeight >= scrollHeight;
-
-    // Add visual feedback class
-    scrollContent.classList.add("overscroll-feedback");
-
-    // Clear existing timeout
-    if (overscrollTimeout) {
-      clearTimeout(overscrollTimeout);
-    }
-
-    // Remove feedback after animation
-    overscrollTimeout = setTimeout(() => {
-      scrollContent.classList.remove("overscroll-feedback");
-    }, 300);
-
-    // Log overscroll event
-    if (atTop || atBottom) {
-      const direction = atTop ? "top" : "bottom";
-      console.log(
-        `Overscroll detected at ${direction} with behavior: ${currentBehavior.textContent}`
-      );
+      this.setup();
     }
   }
 
-  // Add scroll event listener
-  scrollContent.addEventListener("scroll", handleOverscroll);
+  setup() {
+    // Get your specific elements
+    this.scrollContent = document.getElementById("scrollContent");
+    this.behaviorSelect = document.getElementById("behaviorSelect");
 
-  // Touch event handling for better mobile detection
-  let touchStartY = 0;
-  let touchEndY = 0;
+    if (!this.scrollContent) {
+      console.error("scrollContent element not found");
+      return;
+    }
 
-  scrollContent.addEventListener("touchstart", function (e) {
-    touchStartY = e.touches[0].clientY;
-  });
+    // Force enable scroll chaining globally
+    this.forceEnableScrolling();
 
-  scrollContent.addEventListener("touchend", function (e) {
-    touchEndY = e.changedTouches[0].clientY;
-    const touchDiff = touchStartY - touchEndY;
+    // Set up your existing behavior selector
+    this.setupBehaviorSelector();
 
-    // Detect overscroll based on touch movement
-    if (Math.abs(touchDiff) > 50) {
-      const scrollTop = scrollContent.scrollTop;
-      const scrollHeight = scrollContent.scrollHeight;
-      const clientHeight = scrollContent.clientHeight;
+    // Enable scroll chaining for your content
+    this.enableScrollChaining();
 
-      if (
-        (touchDiff > 0 && scrollTop <= 0) ||
-        (touchDiff < 0 && scrollTop + clientHeight >= scrollHeight)
-      ) {
-        console.log(
-          `Touch overscroll detected with behavior: ${currentBehavior.textContent}`
-        );
+    // Set up device info (your existing code)
+    this.setupDeviceInfo();
+
+    console.log("iOS scroll chaining enabled for your content");
+  }
+
+  forceEnableScrolling() {
+    // Remove any scroll locks from body
+    document.body.style.overflow = "auto";
+    document.body.style.position = "static";
+    document.body.style.height = "auto";
+    document.body.style.touchAction = "manipulation";
+
+    // Remove common scroll-lock classes
+    const lockClasses = [
+      "overflow-hidden",
+      "fixed",
+      "no-scroll",
+      "modal-open",
+      "body-scroll-lock",
+    ];
+
+    lockClasses.forEach((className) => {
+      document.body.classList.remove(className);
+    });
+
+    // Apply to your container and content wrapper
+    const container = document.querySelector(".container");
+    const contentWrapper = document.querySelector(".content-wrapper");
+
+    [container, contentWrapper, this.scrollContent].forEach((element) => {
+      if (element) {
+        element.style.webkitOverflowScrolling = "touch";
+        element.style.touchAction = "manipulation";
       }
-    }
-  });
+    });
+  }
 
-  // Initialize
-  updateDeviceInfo();
-  setOverscrollBehavior("auto");
+  setupBehaviorSelector() {
+    if (!this.behaviorSelect) return;
 
-  console.log("Scrollable element:", scrollContent);
+    // Your existing behavior selector logic
+    this.behaviorSelect.addEventListener("change", (e) => {
+      const behavior = e.target.value;
+      this.applyOverscrollBehavior(behavior);
+      this.updateBehaviorDisplay(behavior);
+    });
 
-  scrollContent.addEventListener(
-    "touchmove",
-    (e) => {
-      const atTop = scrollContent.scrollTop === 0;
-      const atBottom =
-        scrollContent.scrollTop + scrollContent.clientHeight >=
-        scrollContent.scrollHeight;
+    // Set initial behavior
+    this.applyOverscrollBehavior("auto");
+  }
 
-      if (atTop || atBottom) {
-        // Temporarily let the body handle scrolling
-        scrollContent.style.overflowY = "hidden";
-        setTimeout(() => {
-          scrollContent.style.overflowY = "auto";
-        }, 300);
+  applyOverscrollBehavior(behavior) {
+    if (!this.scrollContent) return;
+
+    // Apply to your scroll content
+    this.scrollContent.style.overscrollBehavior = behavior;
+
+    // Also apply to content wrapper and container for consistency
+    const contentWrapper = document.querySelector(".content-wrapper");
+    const container = document.querySelector(".container");
+
+    [contentWrapper, container].forEach((element) => {
+      if (element) {
+        element.style.overscrollBehavior = behavior;
       }
-    },
-    { passive: true }
-  );
+    });
 
-  // Performance monitoring
-  let scrollCount = 0;
-  let lastScrollTime = Date.now();
+    console.log(`Applied overscroll-behavior: ${behavior}`);
+  }
 
-  scrollContent.addEventListener("scroll", function () {
-    scrollCount++;
-    const now = Date.now();
+  updateBehaviorDisplay(behavior) {
+    const currentBehaviorElements =
+      document.querySelectorAll("#currentBehavior");
+    currentBehaviorElements.forEach((element) => {
+      element.textContent = behavior;
+    });
+  }
 
-    // Log scroll performance every 100 scrolls
-    if (scrollCount % 100 === 0) {
-      const timeDiff = now - lastScrollTime;
-      const scrollsPerSecond = (100 / timeDiff) * 1000;
-      console.log(
-        `Scroll performance: ${scrollsPerSecond.toFixed(1)} scrolls/second`
-      );
-      lastScrollTime = now;
+  enableScrollChaining() {
+    // Check scroll boundaries
+    const updateScrollPosition = () => {
+      if (!this.scrollContent) return;
+
+      this.isAtTop = this.scrollContent.scrollTop <= 0;
+      this.isAtBottom =
+        this.scrollContent.scrollTop + this.scrollContent.clientHeight >=
+        this.scrollContent.scrollHeight - 1;
+    };
+
+    // Touch event handlers for iOS
+    const handleTouchStart = (e) => {
+      this.startY = e.touches[0].clientY;
+      this.lastY = this.startY;
+      this.lastTime = Date.now();
+      this.velocity = 0;
+      updateScrollPosition();
+    };
+
+    const handleTouchMove = (e) => {
+      const currentY = e.touches[0].clientY;
+      const currentTime = Date.now();
+      const deltaY = this.lastY - currentY;
+      const deltaTime = currentTime - this.lastTime;
+
+      // Calculate velocity for momentum
+      if (deltaTime > 0) {
+        this.velocity = deltaY / deltaTime;
+      }
+
+      updateScrollPosition();
+
+      // Check if we should allow scroll chaining
+      const shouldChainUp = deltaY < 0 && this.isAtTop;
+      const shouldChainDown = deltaY > 0 && this.isAtBottom;
+
+      if (shouldChainUp || shouldChainDown) {
+        // Allow natural scroll chaining to body/container
+        this.transferMomentumToBody();
+        return; // Don't prevent default - allow chaining
+      }
+
+      // Normal scrolling within content - prevent body scroll
+      e.preventDefault();
+
+      this.lastY = currentY;
+      this.lastTime = currentTime;
+    };
+
+    const handleTouchEnd = () => {
+      this.velocity = 0;
+    };
+
+    // Add touch event listeners to your scroll content
+    this.scrollContent.addEventListener("touchstart", handleTouchStart, {
+      passive: true,
+    });
+    this.scrollContent.addEventListener("touchmove", handleTouchMove, {
+      passive: false,
+    });
+    this.scrollContent.addEventListener("touchend", handleTouchEnd, {
+      passive: true,
+    });
+
+    // Also add scroll event listener for boundary detection
+    this.scrollContent.addEventListener("scroll", updateScrollPosition, {
+      passive: true,
+    });
+  }
+
+  transferMomentumToBody() {
+    if (Math.abs(this.velocity) < 0.1) return;
+
+    let currentVel = this.velocity * 30; // Momentum factor
+    const deceleration = 0.92;
+
+    const animate = () => {
+      if (Math.abs(currentVel) < 1) return;
+
+      // Scroll the body/container
+      window.scrollBy(0, currentVel);
+      currentVel *= deceleration;
+
+      requestAnimationFrame(animate);
+    };
+
+    requestAnimationFrame(animate);
+  }
+
+  setupDeviceInfo() {
+    // Your existing device detection code
+    const deviceInfoElement = document.getElementById("deviceInfo");
+    const platformInfoElement = document.getElementById("platformInfo");
+
+    if (deviceInfoElement) {
+      const userAgent = navigator.userAgent;
+      let deviceInfo = "Unknown";
+
+      if (/iPhone/.test(userAgent)) {
+        deviceInfo = "iPhone";
+      } else if (/iPad/.test(userAgent)) {
+        deviceInfo = "iPad";
+      } else if (/Android/.test(userAgent)) {
+        deviceInfo = "Android";
+      } else if (/Windows/.test(userAgent)) {
+        deviceInfo = "Windows";
+      } else if (/Mac/.test(userAgent)) {
+        deviceInfo = "Mac";
+      }
+
+      deviceInfoElement.textContent = deviceInfo;
     }
-  });
 
-  // Add keyboard navigation support
-  document.addEventListener("keydown", function (e) {
-    switch (e.key) {
-      case "1":
-        setOverscrollBehavior("auto");
-        break;
-      case "2":
-        setOverscrollBehavior("contain");
-        break;
-      case "3":
-        setOverscrollBehavior("none");
-        break;
+    if (platformInfoElement) {
+      platformInfoElement.textContent = navigator.platform || "Unknown";
     }
+  }
+
+  // Debug method
+  debug() {
+    console.log("Scroll Content:", this.scrollContent);
+    console.log("Is at top:", this.isAtTop);
+    console.log("Is at bottom:", this.isAtBottom);
+    console.log("Current behavior:", this.behaviorSelect?.value);
+    console.log("Body overflow:", document.body.style.overflow);
+    console.log("Content scroll height:", this.scrollContent?.scrollHeight);
+    console.log("Content client height:", this.scrollContent?.clientHeight);
+  }
+}
+
+// Initialize the scroll chaining system
+const scrollChaining = new ScrollChaining();
+
+// Expose for debugging
+window.scrollChaining = scrollChaining;
+
+// Additional utility functions for your demo
+function testScrollChaining() {
+  console.log("Testing scroll chaining...");
+  if (window.scrollChaining) {
+    window.scrollChaining.debug();
+  }
+}
+
+// Force enable on iOS Safari specifically
+if (/iPhone|iPad/.test(navigator.userAgent)) {
+  console.log("iOS device detected - forcing scroll chaining");
+
+  // Additional iOS-specific fixes
+  document.addEventListener("DOMContentLoaded", () => {
+    // Remove any potential scroll blocks
+    document.body.style.webkitOverflowScrolling = "touch";
+    document.body.style.overscrollBehavior = "auto";
+
+    // Apply to all your elements
+    const elements = [".container", ".content-wrapper", "#scrollContent"];
+
+    elements.forEach((selector) => {
+      const element = document.querySelector(selector);
+      if (element) {
+        element.style.webkitOverflowScrolling = "touch";
+        element.style.overscrollBehavior = "auto";
+        element.style.touchAction = "manipulation";
+      }
+    });
   });
+}
 
-  // Add instructions to the page
-  const instructions = document.createElement("div");
-  instructions.innerHTML = `
-        <div style="background: #e3f2fd; padding: 15px; margin: 15px; border-radius: 8px; border-left: 4px solid #2196f3;">
-            <h4 style="margin: 0 0 10px 0; color: #1976d2;">Keyboard Shortcuts:</h4>
-            <p style="margin: 0; color: #424242; font-size: 14px;">
-                <strong>1:</strong> Auto behavior | <strong>2:</strong> Contain behavior | <strong>3:</strong> None behavior
-            </p>
-        </div>
-    `;
-
-  // Insert instructions after the controls
-  const controls = document.querySelector(".controls");
-  controls.parentNode.insertBefore(instructions, controls.nextSibling);
-});
+// Export for testing
+window.testScrollChaining = testScrollChaining;
