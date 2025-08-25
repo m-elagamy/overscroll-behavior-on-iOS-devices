@@ -9,6 +9,7 @@ body {
     Ubuntu, Cantarell, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 200vh;
+  overflow: auto;
 }
 
 .container {
@@ -88,6 +89,7 @@ body {
   overscroll-behavior: auto;
   -webkit-overflow-scrolling: auto;
   border: 2px solid red;
+  touch-action: manipulation;
 }
 
 .section {
