@@ -84,6 +84,7 @@ body {
   height: 100%;
   overflow-y: auto;
   padding: 20px;
+  -webkit-overscroll-behavior: auto;
   overscroll-behavior: auto;
   -webkit-overflow-scrolling: auto;
   border: 2px solid red;
