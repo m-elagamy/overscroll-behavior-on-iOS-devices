@@ -7,6 +7,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const deviceInfo = document.getElementById("deviceInfo");
   const platformInfo = document.getElementById("platformInfo");
 
+  console.log("DOM fully loaded and parsed");
+
+  console.log("scrollContent:", scrollContent);
+
+  if (!scrollContent) {
+    console.error("❌ scrollContent element not found!");
+    return;
+  }
+
   // Device detection
   function detectDevice() {
     const userAgent = navigator.userAgent;
@@ -166,37 +175,25 @@ document.addEventListener("DOMContentLoaded", function () {
   updateDeviceInfo();
   setOverscrollBehavior("auto");
 
-  const scrollable = document.getElementById("scrollContent");
+  console.log("Scrollable element:", scrollContent);
 
-  let startY = 0;
-
-  scrollable.addEventListener(
-    "touchstart",
-    (e) => {
-      startY = e.touches[0].clientY;
-    },
-    { passive: true }
-  );
-
-  scrollable.addEventListener(
+  scrollContent.addEventListener(
     "touchmove",
     (e) => {
-      const y = e.touches[0].clientY;
-      const up = y > startY;
-      const down = y < startY;
-
-      const atTop = scrollable.scrollTop === 0;
+      const atTop = scrollContent.scrollTop === 0;
       const atBottom =
-        scrollable.scrollTop + scrollable.clientHeight >=
-        scrollable.scrollHeight;
+        scrollContent.scrollTop + scrollContent.clientHeight >=
+        scrollContent.scrollHeight;
 
-      if ((atTop && up) || (atBottom && down)) {
-        // Allow body to scroll
-        e.preventDefault(); // stop Safari from rubber-banding
-        window.scrollBy(0, startY - y);
+      if (atTop || atBottom) {
+        // Temporarily let the body handle scrolling
+        scrollContent.style.overflowY = "hidden";
+        setTimeout(() => {
+          scrollContent.style.overflowY = "auto";
+        }, 300);
       }
     },
-    { passive: false }
+    { passive: true }
   );
 
   // Performance monitoring
