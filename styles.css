@@ -76,7 +76,7 @@ body {
 
 .content-wrapper {
   flex: 1;
-  overflow: hidden;
+  max-height: 450px;
   position: relative;
 }
 
