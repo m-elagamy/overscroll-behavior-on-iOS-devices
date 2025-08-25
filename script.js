@@ -166,6 +166,24 @@ document.addEventListener("DOMContentLoaded", function () {
   updateDeviceInfo();
   setOverscrollBehavior("auto");
 
+  const scrollable = document.getElementById("scrollContent");
+
+  scrollable.addEventListener(
+    "touchmove",
+    (e) => {
+      if (
+        (scrollable.scrollTop === 0 && e.touches[0].clientY > 0) ||
+        scrollable.scrollTop + scrollable.clientHeight >=
+          scrollable.scrollHeight
+      ) {
+        // let body scroll
+        e.preventDefault();
+        window.scrollBy(0, e.touches[0].clientY > 0 ? -10 : 10);
+      }
+    },
+    { passive: false }
+  );
+
   // Add some helpful console messages
   console.log("Overscroll Behavior Demo loaded");
   console.log(
