@@ -2,7 +2,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  overflow: auto;
 }
 
 body {
@@ -10,7 +9,6 @@ body {
     Ubuntu, Cantarell, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 200vh;
-  overflow: "hidden";
 }
 
 .container {
@@ -87,7 +85,7 @@ body {
   overflow-y: auto;
   padding: 20px;
   overscroll-behavior: auto;
-  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: auto;
   border: 2px solid red;
 }
 
