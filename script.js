@@ -168,29 +168,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const scrollable = document.getElementById("scrollContent");
 
+  let startY = 0;
+
+  scrollable.addEventListener(
+    "touchstart",
+    (e) => {
+      startY = e.touches[0].clientY;
+    },
+    { passive: true }
+  );
+
   scrollable.addEventListener(
     "touchmove",
     (e) => {
-      if (
-        (scrollable.scrollTop === 0 && e.touches[0].clientY > 0) ||
+      const y = e.touches[0].clientY;
+      const up = y > startY;
+      const down = y < startY;
+
+      const atTop = scrollable.scrollTop === 0;
+      const atBottom =
         scrollable.scrollTop + scrollable.clientHeight >=
-          scrollable.scrollHeight
-      ) {
-        // let body scroll
-        e.preventDefault();
-        window.scrollBy(0, e.touches[0].clientY > 0 ? -10 : 10);
+        scrollable.scrollHeight;
+
+      if ((atTop && up) || (atBottom && down)) {
+        // Allow body to scroll
+        e.preventDefault(); // stop Safari from rubber-banding
+        window.scrollBy(0, startY - y);
       }
     },
     { passive: false }
   );
-
-  // Add some helpful console messages
-  console.log("Overscroll Behavior Demo loaded");
-  console.log(
-    "Use the buttons to switch between different overscroll behaviors"
-  );
-  console.log("Scroll to the top or bottom to test the behavior");
-  console.log("Check the console for overscroll detection logs");
 
   // Performance monitoring
   let scrollCount = 0;
