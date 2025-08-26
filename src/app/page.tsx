@@ -9,7 +9,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-          Scrollable Div Demo V6
+          Scrollable Div Demo V7
         </h1>
 
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
@@ -28,7 +28,7 @@ export default function Home() {
               className="h-96 overflow-y-auto bg-gray-50 p-4 custom-scrollbar"
             >
               {/* High content to make it scrollable */}
-              {Array.from({ length: 10 }, (_, index: number) => (
+              {Array.from({ length: 50 }, (_, index: number) => (
                 <div
                   key={index}
                   className="mb-4 p-3 bg-white rounded border border-gray-200"
