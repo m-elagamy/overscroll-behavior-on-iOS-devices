@@ -1,6 +1,6 @@
 "use client";
 
-import { useIOSScrollChaining } from "../hooks/useIOSScrollChaining";
+import { useIOSScrollChaining } from "@/hooks/useIOSScrollChaining";
 
 export default function Home() {
   const ref = useIOSScrollChaining();
@@ -9,7 +9,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-          Scrollable Div Demo V8
+          Scrollable Div Demo
         </h1>
 
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
@@ -25,10 +25,10 @@ export default function Home() {
           <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
             <div
               ref={ref}
-              className="h-[300px] overflow-y-auto bg-gray-50 p-4 custom-scrollbar"
+              className="h-96 overflow-y-auto bg-gray-50 p-4 custom-scrollbar"
             >
               {/* High content to make it scrollable */}
-              {Array.from({ length: 50 }, (_, index: number) => (
+              {Array.from({ length: 10 }, (_, index) => (
                 <div
                   key={index}
                   className="mb-4 p-3 bg-white rounded border border-gray-200"
@@ -79,7 +79,7 @@ export default function Home() {
             This section adds more content to the body element to ensure it has
             sufficient height for scrolling.
           </p>
-          {Array.from({ length: 20 }, (_, index: number) => (
+          {Array.from({ length: 20 }, (_, index) => (
             <div
               key={index}
               className="mb-3 p-3 bg-gray-50 rounded border border-gray-200"
