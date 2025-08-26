@@ -1,7 +1,7 @@
 "use client";
 
 import { useIOSScrollChaining } from "@/hooks/useIOSScrollChaining";
-import { Button, Form, Select } from "antd";
+import { Button, Flex, Form, Input, InputNumber, Select } from "antd";
 
 export default function Home() {
   const ref = useIOSScrollChaining();
@@ -13,20 +13,169 @@ export default function Home() {
           Scrollable Div Demo
         </h1>
 
-        <Button type="primary">Button</Button>
+        <Form layout="vertical" className="mt_24">
+          <Form.Item name="id" hidden>
+            <Input />
+          </Form.Item>
 
-        {/* Mock data for Select options */}
-        <Form.Item label="Name">
-          <Select
-            options={[
-              { label: "Alice", value: "alice" },
-              { label: "Bob", value: "bob" },
-              { label: "Charlie", value: "charlie" },
-              { label: "Diana", value: "diana" },
-              { label: "Eve", value: "eve" },
-            ]}
-          />
-        </Form.Item>
+          <div className="flex gap-10 wide">
+            <Form.Item
+              label="Scholarship Name"
+              name="name"
+              className="formItem wide"
+              rules={[{ required: true, message: "required" }]}
+            >
+              <Input size="large" placeholder="Enter scholarship name" />
+            </Form.Item>
+          </div>
+
+          <div className="flex gap-10 wide">
+            <Form.Item
+              label="University"
+              name="universityId"
+              rules={[{ required: true, message: "required" }]}
+              className="formItem wide"
+            >
+              <Select
+                filterOption={false}
+                size="large"
+                placeholder="Select university"
+                showSearch
+                placement="bottomRight"
+                virtual={false}
+                options={[
+                  { label: "University 1", value: "1" },
+                  { label: "University 2", value: "2" },
+                  { label: "University 3", value: "3" },
+                ]}
+              />
+            </Form.Item>
+          </div>
+
+          <div className="flex gap-10 wide">
+            <Form.Item
+              label="Faculties"
+              name="facultyIds"
+              rules={[{ required: true, message: "required" }]}
+              className="formItem wide"
+            >
+              <Select
+                mode="multiple"
+                filterOption={false}
+                size="large"
+                placeholder="Select faculties"
+                showSearch
+                placement="bottomRight"
+                virtual={false}
+                options={[
+                  { label: "Faculty 1", value: "1" },
+                  { label: "Faculty 2", value: "2" },
+                  { label: "Faculty 3", value: "3" },
+                ]}
+              />
+            </Form.Item>
+          </div>
+
+          <div className="flex gap-10 wide">
+            <Form.Item
+              label="Programs"
+              name="departmentIds"
+              rules={[{ required: true, message: "required" }]}
+              className="formItem wide"
+            >
+              <Select
+                mode="multiple"
+                filterOption={false}
+                size="large"
+                placeholder="Select programs"
+                showSearch
+                placement="bottomRight"
+                virtual={false}
+                options={[
+                  { label: "Program 1", value: "1" },
+                  { label: "Program 2", value: "2" },
+                  { label: "Program 3", value: "3" },
+                ]}
+              />
+            </Form.Item>
+          </div>
+
+          <div className="flex gap-10 wide">
+            <Form.Item
+              label="Academic Year"
+              name="academicYear"
+              className="formItem width-50"
+            >
+              <Input size="large" placeholder="Enter academic year" />
+            </Form.Item>
+
+            <Form.Item
+              label="Available Seats"
+              name="availableSeats"
+              className="formItem width-50"
+            >
+              <InputNumber
+                size="large"
+                placeholder="Enter available seats"
+                min={0}
+                className="wide"
+              />
+            </Form.Item>
+          </div>
+
+          <div className="flex gap-10 wide">
+            <Form.Item label="Cost" name="cost" className="formItem width-33">
+              <InputNumber
+                size="large"
+                placeholder="Enter cost"
+                min={0}
+                className="wide"
+                type="number"
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Sales Price"
+              name="salesPrice"
+              className="formItem width-33"
+            >
+              <InputNumber
+                size="large"
+                placeholder="Enter sales price"
+                min={0}
+                className="wide"
+                type="number"
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Agent Price"
+              name="agentPrice"
+              className="formItem width-33"
+            >
+              <InputNumber
+                size="large"
+                placeholder="Enter agent price"
+                min={0}
+                className="wide"
+                type="number"
+              />
+            </Form.Item>
+          </div>
+
+          <Flex justify="end" align="center" gap={10} className="mt_32">
+            <Form.Item style={{ margin: 0 }}>
+              <Button size="large" className="cancel">
+                Cancel
+              </Button>
+            </Form.Item>
+            <Form.Item style={{ margin: 0 }}>
+              <Button htmlType="submit" type="primary" size="large">
+                Create
+              </Button>
+            </Form.Item>
+          </Flex>
+        </Form>
 
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
