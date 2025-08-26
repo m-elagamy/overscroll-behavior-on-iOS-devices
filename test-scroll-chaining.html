@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iOS Scroll Chaining Test</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: #f5f5f5;
+      }
+
+      .header {
+        background: #007aff;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .content {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .scrollable-container {
+        background: white;
+        border: 2px solid #007aff;
+        border-radius: 12px;
+        height: 300px;
+        overflow: auto;
+        margin: 20px 0;
+
+        /* iOS Scroll Chaining CSS */
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: auto;
+        position: relative;
+        touch-action: pan-y;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+      }
+
+      .scrollable-content {
+        padding: 20px;
+      }
+
+      .item {
+        padding: 15px;
+        margin: 10px 0;
+        background: #f8f9fa;
+        border-left: 4px solid #007aff;
+        border-radius: 8px;
+      }
+
+      .bottom-marker {
+        background: #28a745;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px;
+        margin: 20px 0;
+      }
+
+      .footer {
+        background: #333;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        margin-top: 40px;
+      }
+
+      .instructions {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 20px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .instructions ol {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .instructions li {
+        margin: 10px 0;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>iOS Scroll Chaining Test</h1>
+      <p>Test this on iOS Safari to see the difference!</p>
+    </div>
+
+    <div class="content">
+      <div class="instructions">
+        <h2>How to Test:</h2>
+        <ol>
+          <li>Scroll down in the blue-bordered container below</li>
+          <li>When you reach the bottom (green marker), continue dragging</li>
+          <li>
+            On iOS Safari, the page should now continue scrolling smoothly
+          </li>
+          <li>On Android, this should work by default</li>
+        </ol>
+      </div>
+
+      <div class="scrollable-container">
+        <div class="scrollable-content">
+          <h3>Scrollable Content Area</h3>
+
+          <!-- Generate lots of content to make it scrollable -->
+          <div id="content-items"></div>
+
+          <div class="bottom-marker">
+            🎯 <strong>Bottom reached!</strong> Try continuing to scroll - the
+            page should now scroll!
+          </div>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <h3>Page Content Below</h3>
+        <p>
+          This content is below the scrollable container. When you scroll to the
+          bottom of the container above and continue dragging, you should
+          smoothly scroll to this content on iOS Safari.
+        </p>
+
+        <div id="page-content"></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>iOS Scroll Chaining Solution Test</p>
+      <p>Open this file directly in iOS Safari to test</p>
+    </div>
+
+    <script>
+      // Generate content for testing
+      function generateContent(containerId, count, prefix) {
+        const container = document.getElementById(containerId);
+        for (let i = 0; i < count; i++) {
+          const item = document.createElement("div");
+          item.className = "item";
+          item.innerHTML = `<strong>${prefix} ${
+            i + 1
+          }</strong> - This is a test item to demonstrate scroll chaining.`;
+          if (i % 5 === 0) {
+            item.innerHTML +=
+              ' <span style="color: #007AFF;">✨ Special item!</span>';
+          }
+          container.appendChild(item);
+        }
+      }
+
+      // Generate content when page loads
+      window.addEventListener("load", () => {
+        generateContent("content-items", 50, "Item");
+        generateContent("page-content", 20, "Page Content");
+      });
+
+      // Add iOS-specific optimizations
+      function enableIOSScrollChaining() {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        if (!isIOS) return;
+
+        // Configure body for scroll chaining
+        document.body.style.overscrollBehavior = "auto";
+        document.body.style.webkitOverflowScrolling = "touch";
+
+        // Add class for additional styling
+        document.body.classList.add("ios-scroll-chaining-enabled");
+
+        console.log("iOS Scroll Chaining enabled");
+      }
+
+      // Enable when DOM is ready
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", enableIOSScrollChaining);
+      } else {
+        enableIOSScrollChaining();
+      }
+    </script>
+  </body>
+</html>
