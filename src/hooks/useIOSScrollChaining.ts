@@ -13,7 +13,6 @@ export function useIOSScrollChaining() {
     if (!isIOS) return;
 
     let lastY = 0;
-    let rafId: number | null = null;
 
     const onTouchStart = (e: TouchEvent) => {
       lastY = e.touches[0].clientY;
@@ -29,11 +28,7 @@ export function useIOSScrollChaining() {
 
       if ((atTop && isScrollingUp) || (atBottom && isScrollingDown)) {
         e.preventDefault();
-
-        if (rafId) cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(() => {
-          window.scrollBy(0, lastY - currentY);
-        });
+        window.scrollBy(0, lastY - currentY);
       }
 
       lastY = currentY;
@@ -45,7 +40,6 @@ export function useIOSScrollChaining() {
     return () => {
       el.removeEventListener("touchstart", onTouchStart);
       el.removeEventListener("touchmove", onTouchMove);
-      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 
