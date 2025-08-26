@@ -1,4 +1,8 @@
+import { useIOSScrollChaining } from "@/hooks/useIOSScrollChaining";
+
 export default function Home() {
+  const ref = useIOSScrollChaining();
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-4xl mx-auto">
@@ -17,7 +21,10 @@ export default function Home() {
 
           {/* Scrollable div with high content */}
           <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
-            <div className="h-96 overflow-y-auto bg-gray-50 p-4 custom-scrollbar">
+            <div
+              ref={ref}
+              className="h-96 overflow-y-auto bg-gray-50 p-4 custom-scrollbar"
+            >
               {/* High content to make it scrollable */}
               {Array.from({ length: 10 }, (_, index) => (
                 <div
