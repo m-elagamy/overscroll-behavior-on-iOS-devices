@@ -1,6 +1,7 @@
 "use client";
 
 import { useIOSScrollChaining } from "@/hooks/useIOSScrollChaining";
+import { Button, Form, Select } from "antd";
 
 export default function Home() {
   const ref = useIOSScrollChaining();
@@ -11,6 +12,21 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Scrollable Div Demo
         </h1>
+
+        <Button type="primary">Button</Button>
+
+        {/* Mock data for Select options */}
+        <Form.Item label="Name">
+          <Select
+            options={[
+              { label: "Alice", value: "alice" },
+              { label: "Bob", value: "bob" },
+              { label: "Charlie", value: "charlie" },
+              { label: "Diana", value: "diana" },
+              { label: "Eve", value: "eve" },
+            ]}
+          />
+        </Form.Item>
 
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
