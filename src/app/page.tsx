@@ -1,3 +1,5 @@
+"use client";
+
 import { useIOSScrollChaining } from "@/hooks/useIOSScrollChaining";
 
 export default function Home() {
