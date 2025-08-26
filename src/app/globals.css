@@ -19,3 +19,38 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure proper touch behavior on iOS */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Additional iOS-specific optimizations */
+.ios-scroll-chaining-enabled {
+  /* Force hardware acceleration */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+
+  /* Ensure smooth scrolling */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Animation for the special items */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
