@@ -1,90 +1,97 @@
 "use client";
 
-import { ScrollableContainer } from "../components/ScrollableContainer";
-import "../styles/ios-scroll-chaining.css";
+import { useIOSScrollChaining } from "../hooks/useIOSScrollChaining";
 
 export default function Home() {
+  const ref = useIOSScrollChaining();
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Fixed Header */}
-      <header className="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-10">
-        <h1 className="text-2xl font-bold">iOS Scroll Chaining Demo V3</h1>
-        <p className="text-blue-100">Scroll down to test the solution</p>
-      </header>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          Scrollable Div Demo V2
+        </h1>
 
-      {/* Main Content Area */}
-      <main className="p-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">How to Test</h2>
-            <ol className="list-decimal list-inside space-y-2 text-gray-700">
-              <li>Scroll down in the content area below</li>
-              <li>When you reach the bottom, continue dragging</li>
-              <li>
-                On iOS Safari, the page should now continue scrolling smoothly
-              </li>
-              <li>On Android, this should work by default</li>
-            </ol>
-          </div>
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">
+            Scrollable Container
+          </h2>
+          <p className="text-gray-600 mb-4">
+            This container has a fixed height and scrollable content. Try
+            scrolling to see the overscroll behavior.
+          </p>
 
-          {/* Scrollable Container with Long Content */}
-          <ScrollableContainer
-            className="bg-white rounded-lg shadow-md border-2 border-blue-200"
-            style={{ height: "400px" }}
-          >
-            <div className="p-6">
-              <h3 className="text-lg font-semibold mb-4 text-blue-800">
-                Scrollable Content Area
-              </h3>
-
-              {/* Generate lots of content to make it scrollable */}
-              {Array.from({ length: 100 }, (_, i) => (
+          {/* Scrollable div with high content */}
+          <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
+            <div
+              ref={ref}
+              className="h-96 overflow-y-auto bg-gray-50 p-4 custom-scrollbar"
+            >
+              {/* High content to make it scrollable */}
+              {Array.from({ length: 10 }, (_, index: number) => (
                 <div
-                  key={i}
-                  className="p-3 mb-2 bg-gray-50 rounded border-l-4 border-blue-300"
+                  key={index}
+                  className="mb-4 p-3 bg-white rounded border border-gray-200"
                 >
-                  <strong>Item {i + 1}</strong> - This is a test item to
-                  demonstrate scroll chaining.
-                  {i % 5 === 0 && (
-                    <span className="text-blue-600 ml-2">✨ Special item!</span>
+                  <h3 className="font-medium text-gray-800 mb-2">
+                    Content Section {index + 1}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    This is sample content to demonstrate scrolling. Lorem ipsum
+                    dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+                    tempor incididunt ut labore et dolore magna aliqua.
+                  </p>
+                  {index % 5 === 0 && (
+                    <div className="mt-2 p-2 bg-blue-50 rounded text-blue-700 text-xs">
+                      Special highlight for section {index + 1}
+                    </div>
                   )}
                 </div>
               ))}
-
-              <div className="p-4 bg-green-100 border border-green-300 rounded text-center">
-                <strong>🎯 Bottom reached!</strong> Try continuing to scroll -
-                the page should now scroll!
-              </div>
             </div>
-          </ScrollableContainer>
-
-          {/* Additional content below to test page scrolling */}
-          <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Page Content Below</h3>
-            <p className="text-gray-700 mb-4">
-              This content is below the scrollable container. When you scroll to
-              the bottom of the container above and continue dragging, you
-              should smoothly scroll to this content on iOS Safari.
-            </p>
-
-            {Array.from({ length: 20 }, (_, i) => (
-              <div key={i} className="p-2 mb-1 bg-gray-50 rounded">
-                Additional page content {i + 1}
-              </div>
-            ))}
           </div>
         </div>
-      </main>
 
-      {/* Fixed Footer */}
-      <footer className="bg-gray-800 text-white p-4 mt-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <p>iOS Scroll Chaining Solution Demo</p>
-          <p className="text-sm text-gray-400 mt-1">
-            Test this on iOS Safari to see the difference!
-          </p>
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">
+            Instructions
+          </h2>
+          <ul className="text-gray-600 space-y-2">
+            <li>
+              • Scroll within the container above to see the scrolling behavior
+            </li>
+            <li>
+              • Notice how the content scrolls within the fixed-height container
+            </li>
+            <li>• This demonstrates the overscroll issue on iOS devices</li>
+            <li>
+              • The container has a height of 384px (h-96) with overflow-y-auto
+            </li>
+          </ul>
         </div>
-      </footer>
+
+        {/* Additional content to make body taller */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">
+            Additional Content for Body Height
+          </h2>
+          <p className="text-gray-600 mb-4">
+            This section adds more content to the body element to ensure it has
+            sufficient height for scrolling.
+          </p>
+          {Array.from({ length: 20 }, (_, index: number) => (
+            <div
+              key={index}
+              className="mb-3 p-3 bg-gray-50 rounded border border-gray-200"
+            >
+              <p className="text-gray-600 text-sm">
+                Additional content block {index + 1} to increase body height and
+                demonstrate scrolling behavior.
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
