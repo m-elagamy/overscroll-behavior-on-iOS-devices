@@ -13,10 +13,11 @@ export function useIOSScrollChaining() {
     if (!isIOS) return;
 
     let lastY = 0;
-    let rafId: number | null = null;
+    let isAtBoundary = false;
 
     function onTouchStart(e: TouchEvent) {
       lastY = e.touches[0].clientY;
+      isAtBoundary = false;
     }
 
     function onTouchMove(e: TouchEvent) {
@@ -29,14 +30,18 @@ export function useIOSScrollChaining() {
       const isScrollingDown = currentY < lastY; // finger up → content down
       const isScrollingUp = currentY > lastY; // finger down → content up
 
-      // ✅ Only block when at the boundary *and* trying to scroll past it
+      // Only prevent default when at boundary AND trying to scroll past it
       if ((atTop && isScrollingUp) || (atBottom && isScrollingDown)) {
-        e.preventDefault();
-
-        if (rafId) cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(() => {
-          window.scrollBy(0, lastY - currentY);
-        });
+        // Check if we're already at the boundary and trying to overscroll
+        if (isAtBoundary) {
+          e.preventDefault();
+        } else {
+          // Mark that we're at a boundary
+          isAtBoundary = true;
+        }
+      } else {
+        // Reset boundary flag when not at boundary
+        isAtBoundary = false;
       }
 
       lastY = currentY;
@@ -48,7 +53,6 @@ export function useIOSScrollChaining() {
     return () => {
       el.removeEventListener("touchstart", onTouchStart);
       el.removeEventListener("touchmove", onTouchMove);
-      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 
