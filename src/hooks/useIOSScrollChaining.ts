@@ -6,51 +6,49 @@ export function useIOSScrollChaining() {
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const scrollContent = ref.current;
-    if (!scrollContent) return;
+    const el = ref.current;
+    if (!el) return;
 
-    // Track touch position
-    let lastY = 0;
-
-    // Detect if iOS Safari (so we don't mess with Android/desktop which behave correctly)
+    // Detect iOS only
     const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent);
+    if (!isIOS) return;
 
-    if (isIOS) {
-      const handleTouchStart = (e: TouchEvent) => {
-        lastY = e.touches[0].clientY;
-      };
+    let lastY = 0;
+    let rafId: number | null = null;
 
-      const handleTouchMove = (e: TouchEvent) => {
-        const currentY = e.touches[0].clientY;
-        const atTop = scrollContent.scrollTop === 0;
-        const atBottom =
-          scrollContent.scrollHeight - scrollContent.scrollTop ===
-          scrollContent.clientHeight;
-
-        const isScrollingDown = currentY < lastY; // finger going up → content scrolls down
-        const isScrollingUp = currentY > lastY; // finger going down → content scrolls up
-
-        if ((atTop && isScrollingUp) || (atBottom && isScrollingDown)) {
-          // Prevent the "dead stop"
-          e.preventDefault();
-
-          // Manually forward scroll to body
-          window.scrollBy(0, lastY - currentY);
-        }
-
-        lastY = currentY;
-      };
-
-      scrollContent.addEventListener("touchstart", handleTouchStart);
-      scrollContent.addEventListener("touchmove", handleTouchMove, {
-        passive: false,
-      });
-
-      return () => {
-        scrollContent.removeEventListener("touchstart", handleTouchStart);
-        scrollContent.removeEventListener("touchmove", handleTouchMove);
-      };
+    function onTouchStart(e: TouchEvent) {
+      lastY = e.touches[0].clientY;
     }
+
+    function onTouchMove(e: TouchEvent) {
+      const currentY = e.touches[0].clientY;
+      const atTop = el!.scrollTop === 0;
+      const atBottom = el!.scrollHeight - el!.scrollTop === el!.clientHeight;
+
+      const isScrollingDown = currentY < lastY;
+      const isScrollingUp = currentY > lastY;
+
+      if ((atTop && isScrollingUp) || (atBottom && isScrollingDown)) {
+        e.preventDefault();
+
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          window.scrollBy(0, lastY - currentY);
+        });
+      }
+
+      lastY = currentY;
+    }
+
+    // ✅ Important: attach to the DOM node, not React synthetic events
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return ref;
