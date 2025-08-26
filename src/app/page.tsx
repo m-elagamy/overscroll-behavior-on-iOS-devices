@@ -25,7 +25,7 @@ export default function Home() {
           <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
             <div
               ref={ref}
-              className="h-96 overflow-y-auto bg-gray-50 p-4 custom-scrollbar"
+              className="h-[300px] overflow-y-auto bg-gradient-to-br from-blue-50 to-gray-50 p-4 custom-scrollbar"
             >
               {/* High content to make it scrollable */}
               {Array.from({ length: 10 }, (_, index) => (
