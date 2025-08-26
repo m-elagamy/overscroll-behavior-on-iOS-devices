@@ -6,49 +6,68 @@ export function useIOSScrollChaining() {
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    const scrollContent = ref.current;
+    if (!scrollContent) return;
 
-    // Detect iOS only
+    // Detect if iOS Safari (so we don't mess with Android/desktop which behave correctly)
     const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent);
-    if (!isIOS) return;
 
-    let lastY = 0;
-    let rafId: number | null = null;
+    if (isIOS) {
+      // Apply CSS properties for smooth scroll chaining
+      scrollContent.style.overscrollBehavior = "auto";
+      (
+        scrollContent.style as CSSStyleDeclaration & {
+          webkitOverflowScrolling: string;
+        }
+      ).webkitOverflowScrolling = "touch";
 
-    function onTouchStart(e: TouchEvent) {
-      lastY = e.touches[0].clientY;
+      // Ensure the container can participate in scroll chaining
+      scrollContent.style.position = "relative";
+      scrollContent.style.touchAction = "pan-y";
+
+      // Force hardware acceleration for smoother scrolling
+      scrollContent.style.transform = "translateZ(0)";
+      scrollContent.style.webkitTransform = "translateZ(0)";
+
+      // Add a class for additional styling if needed
+      scrollContent.classList.add("ios-scroll-chaining-enabled");
+
+      // Also configure the body for scroll chaining
+      const body = document.body;
+      body.style.overscrollBehavior = "auto";
+      (
+        body.style as CSSStyleDeclaration & { webkitOverflowScrolling: string }
+      ).webkitOverflowScrolling = "touch";
+      body.classList.add("ios-scroll-chaining-enabled");
+
+      return () => {
+        // Clean up styles
+        if (scrollContent) {
+          scrollContent.classList.remove("ios-scroll-chaining-enabled");
+          scrollContent.style.overscrollBehavior = "";
+          (
+            scrollContent.style as CSSStyleDeclaration & {
+              webkitOverflowScrolling: string;
+            }
+          ).webkitOverflowScrolling = "";
+          scrollContent.style.position = "";
+          scrollContent.style.touchAction = "";
+          scrollContent.style.transform = "";
+          scrollContent.style.webkitTransform = "";
+        }
+
+        // Clean up body styles
+        if (body) {
+          body.classList.remove("ios-scroll-chaining-enabled");
+          body.style.overscrollBehavior = "";
+          (
+            body.style as CSSStyleDeclaration & {
+              webkitOverflowScrolling: string;
+            }
+          ).webkitOverflowScrolling = "";
+        }
+      };
     }
-
-    function onTouchMove(e: TouchEvent) {
-      const currentY = e.touches[0].clientY;
-      const atTop = el!.scrollTop === 0;
-      const atBottom = el!.scrollHeight - el!.scrollTop === el!.clientHeight;
-
-      const isScrollingDown = currentY < lastY;
-      const isScrollingUp = currentY > lastY;
-
-      if ((atTop && isScrollingUp) || (atBottom && isScrollingDown)) {
-        e.preventDefault();
-
-        if (rafId) cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(() => {
-          window.scrollBy(0, lastY - currentY);
-        });
-      }
-
-      lastY = currentY;
-    }
-
-    // ✅ Important: attach to the DOM node, not React synthetic events
-    el.addEventListener("touchstart", onTouchStart, { passive: true });
-    el.addEventListener("touchmove", onTouchMove, { passive: false });
-
-    return () => {
-      el.removeEventListener("touchstart", onTouchStart);
-      el.removeEventListener("touchmove", onTouchMove);
-      if (rafId) cancelAnimationFrame(rafId);
-    };
   }, []);
 
   return ref;
